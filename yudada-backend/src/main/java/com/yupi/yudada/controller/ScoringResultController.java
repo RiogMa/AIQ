@@ -1,5 +1,6 @@
 package com.yupi.yudada.controller;
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yupi.yudada.annotation.AuthCheck;
 import com.yupi.yudada.common.BaseResponse;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 评分结果接口
@@ -52,12 +54,14 @@ public class ScoringResultController {
     @PostMapping("/add")
     public BaseResponse<Long> addScoringResult(@RequestBody ScoringResultAddRequest scoringResultAddRequest, HttpServletRequest request) {
         ThrowUtils.throwIf(scoringResultAddRequest == null, ErrorCode.PARAMS_ERROR);
-        // todo 在此处将实体类和 DTO 进行转换
+        // 在此处将实体类和 DTO 进行转换
         ScoringResult scoringResult = new ScoringResult();
         BeanUtils.copyProperties(scoringResultAddRequest, scoringResult);
+        List<String> resultProp = scoringResultAddRequest.getResultProp();
+        scoringResult.setResultProp(JSONUtil.toJsonStr(resultProp));
         // 数据校验
         scoringResultService.validScoringResult(scoringResult, true);
-        // todo 填充默认值
+        // 填充默认值
         User loginUser = userService.getLoginUser(request);
         scoringResult.setUserId(loginUser.getId());
         // 写入数据库
@@ -107,9 +111,11 @@ public class ScoringResultController {
         if (scoringResultUpdateRequest == null || scoringResultUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        // todo 在此处将实体类和 DTO 进行转换
+        // 在此处将实体类和 DTO 进行转换
         ScoringResult scoringResult = new ScoringResult();
         BeanUtils.copyProperties(scoringResultUpdateRequest, scoringResult);
+        List<String> resultProp = scoringResultUpdateRequest.getResultProp();
+        scoringResult.setResultProp(JSONUtil.toJsonStr(resultProp));
         // 数据校验
         scoringResultService.validScoringResult(scoringResult, false);
         // 判断是否存在
@@ -164,7 +170,7 @@ public class ScoringResultController {
      */
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<ScoringResultVO>> listScoringResultVOByPage(@RequestBody ScoringResultQueryRequest scoringResultQueryRequest,
-                                                               HttpServletRequest request) {
+                                                                         HttpServletRequest request) {
         long current = scoringResultQueryRequest.getCurrent();
         long size = scoringResultQueryRequest.getPageSize();
         // 限制爬虫
@@ -185,7 +191,7 @@ public class ScoringResultController {
      */
     @PostMapping("/my/list/page/vo")
     public BaseResponse<Page<ScoringResultVO>> listMyScoringResultVOByPage(@RequestBody ScoringResultQueryRequest scoringResultQueryRequest,
-                                                                 HttpServletRequest request) {
+                                                                           HttpServletRequest request) {
         ThrowUtils.throwIf(scoringResultQueryRequest == null, ErrorCode.PARAMS_ERROR);
         // 补充查询条件，只查询当前登录用户的数据
         User loginUser = userService.getLoginUser(request);
@@ -213,9 +219,11 @@ public class ScoringResultController {
         if (scoringResultEditRequest == null || scoringResultEditRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        // todo 在此处将实体类和 DTO 进行转换
+        // 在此处将实体类和 DTO 进行转换
         ScoringResult scoringResult = new ScoringResult();
         BeanUtils.copyProperties(scoringResultEditRequest, scoringResult);
+        List<String> resultProp = scoringResultEditRequest.getResultProp();
+        scoringResult.setResultProp(JSONUtil.toJsonStr(resultProp));
         // 数据校验
         scoringResultService.validScoringResult(scoringResult, false);
         User loginUser = userService.getLoginUser(request);
@@ -235,3 +243,4 @@ public class ScoringResultController {
 
     // endregion
 }
+
