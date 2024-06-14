@@ -19,6 +19,7 @@ import com.yupi.yudada.model.entity.UserAnswer;
 import com.yupi.yudada.model.entity.User;
 import com.yupi.yudada.model.enums.ReviewStatusEnum;
 import com.yupi.yudada.model.vo.UserAnswerVO;
+import com.yupi.yudada.scoring.ScoringStrategyExecutor;
 import com.yupi.yudada.service.AppService;
 import com.yupi.yudada.service.UserAnswerService;
 import com.yupi.yudada.service.UserService;
@@ -48,8 +49,8 @@ public class UserAnswerController {
     @Resource
     private UserService userService;
 
-//    @Resource
-//    private ScoringStrategyExecutor scoringStrategyExecutor;
+    @Resource
+    private ScoringStrategyExecutor scoringStrategyExecutor;
 
     // region 增删改查
 
@@ -85,15 +86,15 @@ public class UserAnswerController {
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         // 返回新写入的数据 id
         long newUserAnswerId = userAnswer.getId();
-//        // 调用评分模块
-//        try {
-//            UserAnswer userAnswerWithResult = scoringStrategyExecutor.doScore(choices, app);
-//            userAnswerWithResult.setId(newUserAnswerId);
-//            userAnswerService.updateById(userAnswerWithResult);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new BusinessException(ErrorCode.OPERATION_ERROR, "评分错误");
-//        }
+        // 调用评分模块
+        try {
+            UserAnswer userAnswerWithResult = scoringStrategyExecutor.doScore(choices, app);
+            userAnswerWithResult.setId(newUserAnswerId);
+            userAnswerService.updateById(userAnswerWithResult);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "评分错误");
+        }
         return ResultUtils.success(newUserAnswerId);
     }
 
