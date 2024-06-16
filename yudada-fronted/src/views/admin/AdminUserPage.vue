@@ -62,7 +62,9 @@ const initSearchParams = {
 const searchParams = ref<API.UserQueryRequest>({
   ...initSearchParams,
 });
+// 存储获取的数据
 const dataList = ref<API.User[]>([]);
+// 总共有多少值
 const total = ref<number>(0);
 
 /**
